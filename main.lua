@@ -10,6 +10,36 @@ local heros = {}
 local listeSprites = {}
 local spriteType = {}
 
+--Niveau 25x19
+local imgTuiles = {}
+local niveau = {}
+
+function ChargementMap()
+  local i
+  for i=1, 3 do
+    imgTuiles[i] = love.graphics.newImage("images/tuile_"..i..".png")
+  end
+  table.insert(niveau,{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,0,0,0,0})
+  table.insert(niveau,{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
+  table.insert(niveau,{3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3})
+end
+
 --Usine a sprite
 function CreerSprite(pNomImage,pX,pY,pVx, pVy, pType)
   
@@ -48,10 +78,10 @@ function love.load()
   heros = CreerSprite("heros",largeur/2,hauteur/2,3,3,spriteType.heros)
   heros.y = hauteur - heros.origineY*8
   
-  CreerSprite("enemy1",100,100,3,3,spriteType.ennemi)
+  CreerSprite("enemy1",100,100,0,2,spriteType.ennemi)
   CreerSprite("enemy2",200,200,0,0,spriteType.ennemi)
   
-
+  ChargementMap()
   
 end
 
@@ -61,6 +91,9 @@ function love.update(dt)
 end
 
 function love.draw()
+  
+  AfficherMap()
+  
   love.graphics.line(largeur/2,0,largeur/2,hauteur)
   love.graphics.line(0,hauteur/2,largeur,hauteur/2)
   
@@ -87,6 +120,13 @@ function GestionSprites()
       s.x = s.x + s.vx
       s.y = s.y +s.vy
       if s.y < 0 or s.y > hauteur then 
+        table.insert(listeSpritesToDestroy,n)
+      end
+    end
+    if s.type == spriteType.ennemi then
+      s.x = s.x + s.vx
+      s.y = s.y + s.vy
+      if s.y > hauteur then
         table.insert(listeSpritesToDestroy,n)
       end
     end
@@ -141,3 +181,25 @@ function AfficherSprites()
     love.graphics.draw(s.image,s.x,s.y,0,1,1,s.origineX,s.origineY)
   end
 end
+
+function AfficherMap()
+  
+    local nbLignes = #niveau
+  local ligne, colonne
+  local x,y
+  
+  x=0
+  y=0
+  for ligne=1,nbLignes do
+    for colonne=1,19 do
+      if niveau[ligne][colonne] > 0 then
+        local tuile = niveau[ligne][colonne]
+        love.graphics.draw(imgTuiles[tuile],tuile,x,y,0,1,1)
+      end
+      x = x + 32
+    end
+    x = 0
+    y = y +32
+  end
+end
+
